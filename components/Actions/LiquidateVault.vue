@@ -32,11 +32,12 @@
     import BigNumber from 'bignumber.js';
     import global from "~/mixins/global.js";
     import swap from "~/mixins/swap.js";
+    import qi from "~/mixins/qi.js";
     import IERC20stablecoin_abi from "/static/IERC20Stablecoin/abi.json";
     import IERC20_abi from "/static/IERC20/abi.json";
 
     export default {
-        mixins: [global, swap],
+        mixins: [global, swap, qi],
         computed: {
             tokenInfo() {
                 if(this.data.tokenData.name !== "") {

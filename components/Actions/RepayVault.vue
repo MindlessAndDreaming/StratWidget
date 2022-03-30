@@ -107,7 +107,7 @@
 
                 var loanPlatform = this.$store.state.myAccount.networkId != 137 ? "spooky_mai_usdc": "quick_mai_usdt";
                 this.requestMAIloan(loanPlatform, new BigNumber(amountToPay).dividedBy(new BigNumber(10).pow(18)).toFormat(2, BigNumber.ROUND_UP));
-                var totalFreeMAIWanted = new BigNumber(amountToPay).times(1000).dividedToIntegerBy(990);
+                var totalFreeMAIWanted = new BigNumber(amountToPay).times(1000).dividedToIntegerBy(980);
 
                 var price = await vault.methods.getEthPriceSource().call();
                 var MAIPerToken = new BigNumber(price).dividedBy(new BigNumber(10 ** collateralDecimals));
