@@ -1,4 +1,4 @@
-# StratWidget
+# StratWidget (ALPHA)
 interact with all contracts using javascript
 
 ## Build Setup
