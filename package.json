@@ -1,0 +1,22 @@
+{
+  "name": "stratwidget",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.13.6",
+    "bignumber.js": "^9.0.2",
+    "bootstrap": "^4.6.0",
+    "bootstrap-vue": "^2.21.2",
+    "core-js": "^3.15.1",
+    "ethers": "^5.5.4",
+    "nuxt": "^2.15.7",
+    "nuxt-web3": "^0.0.6",
+    "vue-select": "^3.16.0"
+  }
+}
