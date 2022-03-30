@@ -108,7 +108,7 @@
                 this.requestMAIloan("spooky_mai_usdc", this.borrowable);
                 var backing = new BigNumber(this.data.quantityInput).multipliedBy(10 ** 18); // mai decimals 
                 var loanValue = new BigNumber(this.borrowable).multipliedBy(10 ** 18); // mai decimals
-                var amountToBorrow = loanValue.multipliedBy(1000).dividedToIntegerBy(996).minus(backing); // borrow fee plus buffer - amount to borrow from the vault at the end of the transaction
+                var amountToBorrow = loanValue.multipliedBy(1000).dividedToIntegerBy(995).minus(backing); // borrow fee plus buffer - amount to borrow from the vault at the end of the transaction
 
                 var priceSourceDecimals = await vault.methods.priceSourceDecimals().call();
                 var price = await vault.methods.getEthPriceSource().call();
@@ -159,7 +159,7 @@
                     this.data.addressInput, 
                     this.data.vaultIDInput, 
                     amountToBorrow);
-                    
+
                 this.afterProcessing();
 
             }

@@ -110,7 +110,7 @@
                 var price = await vault.methods.getEthPriceSource().call();
                 var MAIPerToken = new BigNumber(price).dividedBy(new BigNumber(10).pow(collateralDecimals));
                 var tokensToWithdraw = totalFreeMAIWanted.dividedToIntegerBy(MAIPerToken);
-                var minMAINeeded = new BigNumber(amountToPay).times(1000).dividedToIntegerBy(996);
+                var minMAINeeded = new BigNumber(amountToPay).times(1000).dividedToIntegerBy(995);
                 
                 
                 var process = await this.processCamTokenToToken(collateralAddress, tokensToWithdraw);
@@ -149,7 +149,7 @@
                     minMAINeeded,
                     this.splitAndTrim(this.data.path)
                 );
-                
+
                 this.afterProcessing();
 
             }

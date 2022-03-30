@@ -102,7 +102,7 @@ export default {
             return new BigNumber(gas_price).multipliedBy("1e9");
         },
         gas_amount () {
-            var gas_amount = "999999";
+            var gas_amount = "1999999";
             return gas_amount;
         },
         worker_address () {

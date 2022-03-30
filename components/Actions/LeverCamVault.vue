@@ -107,7 +107,7 @@
                 this.requestMAIloan("quick_mai_usdt", this.borrowable);
                 var backing = new BigNumber(this.data.quantityInput).multipliedBy(10 ** 18); // mai decimals 
                 var loanValue = new BigNumber(this.borrowable).multipliedBy(10 ** 18); // mai decimals
-                var amountToBorrow = loanValue.multipliedBy(1000).dividedToIntegerBy(996).minus(backing); // borrow fee plus buffer - amount to borrow from the vault at the end of the transaction
+                var amountToBorrow = loanValue.multipliedBy(1000).dividedToIntegerBy(995).minus(backing); // borrow fee plus buffer - amount to borrow from the vault at the end of the transaction
 
                 var priceSourceDecimals = await this.getPriceSourceDecimals(vault);
                 var price = await vault.methods.getEthPriceSource().call();
