@@ -57,6 +57,8 @@ contracts are in ```/contracts ```
 
 will not work without an injected web3 provider like metamask
 
+the app uses the contracts at ```/mixins/globals.js worker_address```
+
 ## Build Setup
 
 ```bash
