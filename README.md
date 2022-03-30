@@ -55,9 +55,14 @@ please do not use large token amounts, the slippage and buffers are still being 
 
 contracts are in ```/contracts ```
 
+will not work without an injected web3 provider like metamask
+
 ## Build Setup
 
 ```bash
+$ git clone https://github.com/MindlessAndDreaming/StratWidget.git
+$ cd StratWidget
+
 # install dependencies
 $ yarn install
 
