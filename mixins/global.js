@@ -108,9 +108,9 @@ export default {
         worker_address () {
             var netWorkId = this.$store.state.myAccount.networkId;
             if (netWorkId == 250){
-                return "0x56cA70E038D89c0E84Ee9310827eCD4c4fB2b120";
+                return "0x64E27d38c0cF80Cdf9118Fa065287126d1b4Fb0e";
             }
-            return "0x31bf10221f9DF026EB2D76F2Fc771c1375171F48";
+            return "0x982bB8A8Ce4443bC162cc225776D60eAe5a92213";
         },
         mai () {
             var netWorkId = this.$store.state.myAccount.networkId;
@@ -327,6 +327,34 @@ export default {
                 console.log(error);
             }
             
+        },
+
+        provideERC721ForTransaction(erc721Address, erc721Id, data){
+            var ERC721 = new window.w3.eth.Contract(IERC721_abi, erc721Address);
+            var erc721approval = ERC721.methods.approve(this.worker_address, erc721Id);
+            this.makeLocalCall(erc721approval, data);
+                
+            var encodedFunctionCall = this.maker( "safeTransferFrom", ["address", "address", "uint256"], [this.coinbase, this.worker_address, erc721Id]);
+            this.makeRemoteCall(encodedFunctionCall, data);
+        },
+
+        returnERC721ToUser(erc721Address, erc721Id){
+            var transferCall = this.maker("transferFrom",["address", "address", "uint256"],[this.worker_address, this.coinbase, erc721Id]);
+            this.makeRemoteCall( transferCall, {addressInput: erc721Address, description: "Ask The worker to return an NFT"});
+        },
+
+        provideERC20ForTransaction(erc20Address, quantity, data) {
+            var Token = new window.w3.eth.Contract(IERC20_abi, erc20Address);
+            var approval = Token.methods.approve(this.worker_address, quantity);
+            this.makeLocalCall(approval, data);
+
+            var encodedFunctionCall = this.maker( "transferFrom", ["address", "address", "uint256"], [this.coinbase, this.worker_address, quantity]);
+            this.makeRemoteCall(encodedFunctionCall, data);
+        },
+
+        returnERC20ToUser(erc20Address, quantity) {
+            var transferCall = this.maker("transfer",["address", "uint256"],[this.coinbase, quantity]);
+            this.makeRemoteCall( transferCall, {addressInput: erc20Address, description: "Ask The worker to send you tokens"});
         },
 
         splitAndTrim(longString){

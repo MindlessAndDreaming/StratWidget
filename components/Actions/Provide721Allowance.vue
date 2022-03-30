@@ -59,12 +59,7 @@
                 this.addAllVaultOptions(this.vaultOptions);
             },
             execute(){
-                var ERC721 = new window.w3.eth.Contract(IERC721_abi, this.data.addressInput);
-                var erc721approval = ERC721.methods.approve(this.worker_address, this.data.idInput);
-                this.makeLocalCall(erc721approval, this.data);
-                
-                var encodedFunctionCall = this.maker( "safeTransferFrom", ["address", "address", "uint256"], [this.coinbase, this.worker_address, this.data.idInput]);
-                this.makeRemoteCall(encodedFunctionCall, this.data);
+                this.provideERC721ForTransaction(this.data.addressInput, this.data.idInput, this.data);
             }
         }
     }

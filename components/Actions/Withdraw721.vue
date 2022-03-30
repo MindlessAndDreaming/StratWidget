@@ -60,8 +60,7 @@
                 this.addAllVaultOptions(this.vaultOptions);
             },
             execute(){                
-                var transferCall = this.maker("transferFrom",["address", "address", "uint256"],[this.worker_address, this.coinbase, this.data.idInput]);
-                this.makeRemoteCall( transferCall, {addressInput: this.data.addressInput, description: "Ask The worker to return an NFT"});
+                this.returnERC721ToUser(this.data.addressInput, this.data.idInput);
             }
         }
     }

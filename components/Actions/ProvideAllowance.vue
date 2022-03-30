@@ -55,11 +55,8 @@
                 var Token = new window.w3.eth.Contract(IERC20_abi, this.data.addressInput);
                 var decimals =  await Token.methods.decimals().call();
                 var quantity = new BigNumber(this.data.quantityInput).multipliedBy(new BigNumber(10).pow(decimals));                
-                var approval = Token.methods.approve(this.worker_address, quantity);
-                this.makeLocalCall(approval, this.data);
-
-                var encodedFunctionCall = this.maker( "transferFrom", ["address", "address", "uint256"], [this.coinbase, this.worker_address, quantity]);
-                this.makeRemoteCall(encodedFunctionCall, this.data);
+                
+                this.provideERC20ForTransaction(this.data.addressInput, quantity, this.data);
             }
         }
     }
