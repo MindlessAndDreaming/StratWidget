@@ -3,7 +3,7 @@ interact with all contracts using javascript
 
 Select strategies in the landing page.
 
-![strategies landing page ](https://imgur.com/WXHFmqv)
+![strategies landing page ](https://i.imgur.com/WXHFmqv.jpeg)
 
 First, choose your vault, and vault ID
 
