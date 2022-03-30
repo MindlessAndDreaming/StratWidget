@@ -1,4 +1,5 @@
-# stratwidget
+# StratWidget
+interact with all contracts using javascript
 
 ## Build Setup
 
