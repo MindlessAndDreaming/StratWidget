@@ -96,6 +96,7 @@
                 this.addVaultOptions("single", this.vaultOptions);
             },
             async execute(){
+                this.beforeProcessing();
                 var swapRouterAddress = this.data.router;
                 var vault = new window.w3.eth.Contract(IERC20stablecoin_abi, this.data.addressInput);
                 var collateralAddress = await vault.methods.collateral().call();
@@ -117,6 +118,7 @@
                 var collateralExpected = amountsOut[amountsOut.length - 1];
                 var minCollateralIn = new BigNumber(collateralExpected).dividedToIntegerBy(1.001); // 0.1% slippage 
 
+                this.afterProcessing();
                 
                 if(calculatedCollateralIn.isGreaterThan(new BigNumber(collateralExpected).times(1.05))) {
                     alert("You might suffer a large slippage ( > 5%), most probably this is an issue in the path");

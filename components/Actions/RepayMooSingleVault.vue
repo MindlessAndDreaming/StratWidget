@@ -87,6 +87,7 @@
                 this.addVaultOptions("moosingle", this.vaultOptions);
             },
             async execute(){
+                this.beforeProcessing();
                 var amountToPay;
                 var swapRouter = this.data.router;
                 
@@ -121,6 +122,7 @@
                 var payable = new BigNumber(amountToPay).isGreaterThan(new BigNumber(vaultDebt)) ? vaultDebt : amountToPay;
                 var debtToPay = new BigNumber(payable);
 
+                this.afterProcessing();
  
                 var payBackApprovalCall = this.maker("approve",["address", "uint256"],[this.data.addressInput, minMAINeeded]);
                 this.makeRemoteCall( payBackApprovalCall, {addressInput: await vault.methods.mai().call(), description: "allow the vault address to pull MAI from the worker to pay back the loan"});

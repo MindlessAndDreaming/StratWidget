@@ -86,6 +86,7 @@
                 this.addVaultOptions("cam", this.vaultOptions);
             },
             async execute(){
+                this.beforeProcessing();
                 var amountToPay;
                 var swapRouter = this.data.router;
                 
@@ -117,6 +118,8 @@
 
                 var payable = new BigNumber(amountToPay).isGreaterThan(new BigNumber(vaultDebt)) ? vaultDebt : amountToPay;
                 var debtToPay = new BigNumber(payable);
+                
+                this.afterProcessing();
                 
                 
                 var payBackApprovalCall = this.maker("approve",["address", "uint256"],[this.data.addressInput, debtToPay]);

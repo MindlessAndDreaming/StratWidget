@@ -91,6 +91,8 @@
                 this.addVaultOptions("moosingle", this.vaultOptions);
             },
             async execute(){
+                this.beforeProcessing();
+
                 var swapRouter = this.data.router;
                 
                 var vault = new window.w3.eth.Contract(IERC20stablecoin_abi, this.data.addressInput);
@@ -111,7 +113,7 @@
                 var process = this.processMooTokenToToken(collateralAddress, withdrawableCollateral);
                 var tokensReceived = new BigNumber(process.underlyingTokens).dividedToIntegerBy(1.01);
 
-
+                this.afterProcessing();
                 
                 var payBackApprovalCall = this.maker("approve",["address", "uint256"],[this.data.addressInput, vaultDebt]);
                 this.makeRemoteCall( payBackApprovalCall, {addressInput: await vault.methods.mai().call(), description: "allow the vault address to pull MAI from the worker to pay back the loan"});

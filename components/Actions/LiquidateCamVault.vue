@@ -85,6 +85,7 @@
                 this.addVaultOptions("cam", this.vaultOptions);
             },
             async execute(){
+                this.beforeProcessing();
                 var swapRouter = this.data.router;
                 
                 var vault = new window.w3.eth.Contract(IERC20stablecoin_abi, this.data.addressInput);
@@ -105,6 +106,8 @@
                 
                 var process = await this.processCamTokenToToken(collateralAddress, withdrawableCollateral);
                 var tokensToSwap = process.underlyingTokens.dividedToIntegerBy(1.001);
+
+                this.afterProcessing();
 
                 var payBackApprovalCall = this.maker("approve",["address", "uint256"],[this.data.addressInput, vaultDebt]);
                 this.makeRemoteCall( payBackApprovalCall, {addressInput: await vault.methods.mai().call(), description: "allow the vault address to pull MAI from the worker to pay back the loan"});

@@ -240,6 +240,14 @@ export default {
             this.$nuxt.$emit("requestedFlashLoan", {loan});
         },
 
+        beforeProcessing() {
+            this.$nuxt.$emit("startedProcessing", true);
+        },
+
+        afterProcessing() {
+            this.$nuxt.$emit("finishedProcessing", true);
+        },
+
         maker(functionName, argTypesArray, argsArray) {
             var functionInputs = [];
             for(let i=0; i<argTypesArray.length; i++){

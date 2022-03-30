@@ -98,6 +98,7 @@
                 this.addVaultOptions("moosingle", this.vaultOptions);
             },
             async execute(){
+                this.beforeProcessing();
                 var swapRouterAddress = this.data.router;
                 var vault = new window.w3.eth.Contract(IERC20stablecoin_abi, this.data.addressInput);
                 var collateralAddress = await vault.methods.collateral().call();
@@ -122,6 +123,7 @@
                 var process = await this.processTokenToMooToken(collateralAddress, minBaseCollateralIn);
                 var tokensToDeposit = process.mooTokens;
 
+                this.afterProcessing();
 
                 if(calculatedCollateralIn.isGreaterThan(new BigNumber(tokensToDeposit).times(1.05))) {
                      alert("You might suffer a large slippage ( > 5%), most probably this is an issue in the path");

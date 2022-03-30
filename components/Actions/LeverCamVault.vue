@@ -34,7 +34,7 @@
                 </b-form-group>
                 <p>{{ pathInfo }}</p>
             </form>
-        </b-modal>
+    </b-modal>
 </template>
 
 <script>
@@ -97,6 +97,7 @@
                 this.addVaultOptions("cam", this.vaultOptions);
             },
             async execute(){
+                this.beforeProcessing();
                 var swapRouterAddress = this.data.router;
                 var vault = new window.w3.eth.Contract(IERC20stablecoin_abi, this.data.addressInput);
                 var collateralAddress = await vault.methods.collateral().call();
@@ -120,6 +121,8 @@
                 var process = await this.processTokenToCamToken(collateralAddress, minBaseCollateralIn);
                 console.log(JSON.stringify(process)); 
                 var tokensToDeposit = process.camTokens;
+
+                this.afterProcessing();
 
                 if(calculatedCollateralIn.isGreaterThan(new BigNumber(tokensToDeposit).times(1.05))) {
                      alert("You might suffer a large slippage ( > 5%), most probably this is an issue in the path");

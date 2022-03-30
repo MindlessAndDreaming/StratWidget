@@ -84,6 +84,7 @@
                 this.addVaultOptions("single", this.vaultOptions);
             },
             async execute(){
+                this.beforeProcessing();
                 var amountToPay;
                 var swapRouter = this.data.router;
                 
@@ -112,6 +113,7 @@
                 var tokensToSell = totalFreeMAIWanted.dividedToIntegerBy(MAIPerToken);
                 var minMAINeeded = new BigNumber(amountToPay).times(1000).dividedToIntegerBy(996);
                 
+                this.afterProcessing();
 
                 var payBackApprovalCall = this.maker("approve",["address", "uint256"],[this.data.addressInput, totalFreeMAIWanted]);
                 this.makeRemoteCall( payBackApprovalCall, {addressInput: await vault.methods.mai().call(), description: "allow the vault address to pull MAI from the worker to pay back the loan"});
