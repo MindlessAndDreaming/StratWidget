@@ -58,8 +58,8 @@
             async setup() {
                 this.addAllVaultOptions(this.vaultOptions);
             },
-            execute(){
-                this.provideERC721ForTransaction(this.data.addressInput, this.data.idInput, this.data);
+            async execute(){
+                await this.provideERC721ForTransaction(this.data.addressInput, this.data.idInput, this.data);
             }
         }
     }

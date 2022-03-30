@@ -11,15 +11,18 @@ export default {
            minimumReceived,
            pathArray,
         ){
+            var token1Info = await this.getERC20Info(pathArray[0]);
+            var token2Info = await this.getERC20Info(pathArray[pathArray.length-1]);
+            
             var swapApprovalCall = this.maker("approve",["address", "uint256"],[swapRouterAddress, tokensToSwap]);
-            this.makeRemoteCall( swapApprovalCall, {addressInput: tokenAddress, description: "allow the  swap router to swap tokens"});
+            this.makeRemoteCall( swapApprovalCall, {addressInput: tokenAddress, description: `allow the swap router to swap ${this.humanize(tokensToSwap, token1Info.decimals)} ${token1Info.name}`});
 
             var swapCall = this.maker(
                 "swapExactTokensForTokens",
                 ["uint256", "uint256", "address[]", "address", "uint256"],
                 [tokensToSwap, minimumReceived, pathArray, this.worker_address, Math.floor(Date.now() / 1000) + 600  ]
             );
-            this.makeRemoteCall( swapCall, {addressInput: swapRouterAddress, description: `make the swap`});
+            this.makeRemoteCall( swapCall, {addressInput: swapRouterAddress, description: `swap ${this.humanize(tokensToSwap, token1Info.decimals)} ${token1Info.name} to at least ${this.humanize(minimumReceived, token2Info.decimals)} ${token2Info.name}`});
         },
         
         

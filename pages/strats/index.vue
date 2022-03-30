@@ -108,6 +108,7 @@
         },
         data() {
             return {
+                showOverlay: false,
                 loading: false,
                 loadingMessage: "Loading ...",
                 stratbatch: "",

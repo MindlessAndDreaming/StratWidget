@@ -56,7 +56,7 @@
                 var decimals =  await Token.methods.decimals().call();
                 var quantity = new BigNumber(this.data.quantityInput).multipliedBy(new BigNumber(10).pow(decimals));                
                 
-                this.provideERC20ForTransaction(this.data.addressInput, quantity, this.data);
+                await this.provideERC20ForTransaction(this.data.addressInput, quantity, this.data);
             }
         }
     }

@@ -35,12 +35,13 @@
     import BigNumber from 'bignumber.js';
     import global from "~/mixins/global.js";
     import swap from "~/mixins/swap.js";
+    import qi from "~/mixins/qi.js";
     import IERC20stablecoin_abi from "/static/IERC20Stablecoin/abi.json";
     import IERC20_abi from "/static/IERC20/abi.json";
     import IERC721_abi from "/static/IERC721/abi.json";
 
     export default {
-        mixins: [global, swap],
+        mixins: [global, swap, qi],
         computed: {
             tokenInfo() {
                 if(this.data.tokenData.name !== "") {
@@ -113,26 +114,34 @@
                 var tokensToSell = totalFreeMAIWanted.dividedToIntegerBy(MAIPerToken);
                 var minMAINeeded = new BigNumber(amountToPay).times(1000).dividedToIntegerBy(996);
                 
-                this.afterProcessing();
-
-                var payBackApprovalCall = this.maker("approve",["address", "uint256"],[this.data.addressInput, totalFreeMAIWanted]);
-                this.makeRemoteCall( payBackApprovalCall, {addressInput: await vault.methods.mai().call(), description: "allow the vault address to pull MAI from the worker to pay back the loan"});
-
                 var payable = new BigNumber(amountToPay).isGreaterThan(new BigNumber(vaultDebt)) ? vaultDebt : amountToPay;
                 var debtToPay = new BigNumber(payable);
-                var payBackCall = this.maker("payBackToken",["uint256", "uint256"],[new BigNumber(this.data.vaultIDInput), debtToPay]);
-                this.makeRemoteCall( payBackCall, {addressInput: this.data.addressInput, description: "pay back MAI"});
+                
+                //payback tokens
+                await this.callPayBackToken(
+                    this.data.addressInput,
+                    this.data.vaultIDInput,
+                    debtToPay
+                );
 
-                var withdrawForSaleCall = this.maker("withdrawCollateral",["uint256", "uint256"],[this.data.vaultIDInput, tokensToSell]);
-                this.makeRemoteCall( withdrawForSaleCall, {addressInput: this.data.addressInput, description: "withdraw enough collateral to pay the flashswap"});
+                //withdraw collateral
+                await this.callWithdrawCollateral(
+                    this.data.addressInput,
+                    this.data.vaultIDInput,
+                    collateralAddress,
+                    tokensToSell
+                );
 
-                this.callSwap(
+                await this.callSwap(
                     swapRouter,
                     tokensToSell,
                     collateralAddress,
                     minMAINeeded,
                     this.splitAndTrim(this.data.path)
                 );
+                
+                this.afterProcessing();
+
             }
         }
     }

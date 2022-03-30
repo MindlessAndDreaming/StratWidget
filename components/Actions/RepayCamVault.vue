@@ -118,20 +118,23 @@
 
                 var payable = new BigNumber(amountToPay).isGreaterThan(new BigNumber(vaultDebt)) ? vaultDebt : amountToPay;
                 var debtToPay = new BigNumber(payable);
-                
-                this.afterProcessing();
-                
-                
-                var payBackApprovalCall = this.maker("approve",["address", "uint256"],[this.data.addressInput, debtToPay]);
-                this.makeRemoteCall( payBackApprovalCall, {addressInput: await vault.methods.mai().call(), description: "allow the vault address to pull MAI from the worker to pay back the loan"});
+                                
+                //payback tokens
+                await this.callPayBackToken(
+                    this.data.addressInput,
+                    this.data.vaultIDInput,
+                    debtToPay
+                );
 
-                var payBackCall = this.maker("payBackToken",["uint256", "uint256"],[new BigNumber(this.data.vaultIDInput), debtToPay]);
-                this.makeRemoteCall( payBackCall, {addressInput: this.data.addressInput, description: "pay back MAI"});
+                //withdraw collateral
+                await this.callWithdrawCollateral(
+                    this.data.addressInput,
+                    this.data.vaultIDInput,
+                    collateralAddress,
+                    tokensToWithdraw
+                );
 
-                var withdrawForSaleCall = this.maker("withdrawCollateral",["uint256", "uint256"],[this.data.vaultIDInput, tokensToWithdraw]);
-                this.makeRemoteCall( withdrawForSaleCall, {addressInput: this.data.addressInput, description: "withdraw enough collateral to pay the flashswap"});
-
-                this.callCamTokenToToken(
+                await this.callCamTokenToToken(
                     process.AaveLendingPool,
                     tokensToWithdraw,
                     collateralAddress,
@@ -139,13 +142,15 @@
                     process.underlyingAssetAddress
                 );
 
-                this.callSwap(
+                await this.callSwap(
                     swapRouter,
                     tokensToSwap,
                     process.underlyingAssetAddress,
                     minMAINeeded,
                     this.splitAndTrim(this.data.path)
                 );
+                
+                this.afterProcessing();
 
             }
         }

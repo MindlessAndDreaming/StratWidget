@@ -23,24 +23,27 @@ export default {
             return {camTokens, underlyingAssetAddress, AaveLendingPool, ATokenAddress};
         },
 
-        callTokenToCamToken(
+        async callTokenToCamToken(
             AaveLendingPool, 
             underlyingTokens, 
             underlyingAssetAddress,
             CamTokenAddress,
             ATokenAddress 
         ){
+            var underlyingTokenInfo = await this.getERC20Info(underlyingAssetAddress);
             var enterATokenApprovalCall = this.maker("approve",["address", "uint256"],[AaveLendingPool, underlyingTokens]);
-            this.makeRemoteCall( enterATokenApprovalCall, {addressInput: underlyingAssetAddress, description: "allow AAVE Lending pool address to pull the underlying token from the worker to deposit into AAVE"});
+            this.makeRemoteCall( enterATokenApprovalCall, {addressInput: underlyingAssetAddress, description: `allow AAVE Lending pool address to pull ${underlyingTokenInfo.name} contract from the worker to deposit into AAVE`});
 
+            var aTokenInfo = await this.getERC20Info(ATokenAddress);
             var enterATokenContractCall = this.maker("deposit",["address","uint256","address","uint16"],[underlyingAssetAddress, underlyingTokens, this.worker_address, 0]);
-            this.makeRemoteCall( enterATokenContractCall, {addressInput: AaveLendingPool, description: "Enter AAVE lending pool (token to AToken)"});
+            this.makeRemoteCall( enterATokenContractCall, {addressInput: AaveLendingPool, description: `Enter AAVE lending pool ( ${this.humanize(underlyingTokens, underlyingTokenInfo.decimals)} ${underlyingTokenInfo.name} to ${aTokenInfo.name})`});
             
+            var camTokenInfo = await this.getERC20Info(CamTokenAddress);
             var enterCamTokenApprovalCall = this.maker("approve",["address", "uint256"],[CamTokenAddress, underlyingTokens]);
-            this.makeRemoteCall( enterCamTokenApprovalCall, {addressInput: ATokenAddress, description: "allow CamToken address to pull the Atoken from the worker to deposit into the CamContract"});
+            this.makeRemoteCall( enterCamTokenApprovalCall, {addressInput: ATokenAddress, description: `allow ${camTokenInfo.name} contract to pull ${this.humanize(underlyingTokens, underlyingTokenInfo.decimals)} ${aTokenInfo.name}  from the worker`});
 
             var enterCamTokenContractCall = this.maker("enter",["uint256"],[underlyingTokens]);
-            this.makeRemoteCall( enterCamTokenContractCall, {addressInput: CamTokenAddress, description: "enter CamToken contract (AToken to CamToken)"});
+            this.makeRemoteCall( enterCamTokenContractCall, {addressInput: CamTokenAddress, description: `enter CamToken Contract (${this.humanize(underlyingTokens, underlyingTokenInfo.decimals)} ${aTokenInfo.name} to ${camTokenInfo.name})`});
         },
 
         async processCamTokenToToken(CamAddress, CamTokens) {
@@ -59,19 +62,21 @@ export default {
              return {underlyingTokens, underlyingAssetAddress, AaveLendingPool, ATokenAddress};
         },
 
-        callCamTokenToToken(
+        async callCamTokenToToken(
             AaveLendingPool, 
             camTokens, 
             camAddress,
-            aTokens,
-            aAssetAddress
+            underlyingTokens,
+            underlyingAssetAddress
         ){
-            
-            var leaveCamTokenContractCall = this.maker("leave",["uint256"],[camTokens]);
-            this.makeRemoteCall( leaveCamTokenContractCall, {addressInput: camAddress, description: "leave Camtoken contract (CamToken to AToken)"});
+            var camTokenInfo = await this.getERC20Info(camAddress);
+            var underlyingTokenInfo = await this.getERC20Info(underlyingAssetAddress);
 
-            var leaveATokenContractCall = this.maker("withdraw",["address","uint256","address"],[aAssetAddress, aTokens, this.worker_address]);
-            this.makeRemoteCall( leaveATokenContractCall, {addressInput: AaveLendingPool, description: "withdraw from Aave (AToken to token)"});
+            var leaveCamTokenContractCall = this.maker("leave",["uint256"],[camTokens]);
+            this.makeRemoteCall( leaveCamTokenContractCall, {addressInput: camAddress, description: `withdraw  ${this.humanize(camTokens, camTokenInfo.decimals)} ${camTokenInfo.name} from the CamContract`});
+
+            var leaveATokenContractCall = this.maker("withdraw",["address","uint256","address"],[underlyingAssetAddress, underlyingTokens, this.worker_address]);
+            this.makeRemoteCall( leaveATokenContractCall, {addressInput: AaveLendingPool, description: `withdraw ${this.humanize(underlyingTokens, underlyingTokenInfo.decimals)} ${underlyingTokenInfo.name} from Aave`});
         },
 
     } 

@@ -329,7 +329,11 @@ export default {
             
         },
 
-        provideERC721ForTransaction(erc721Address, erc721Id, data){
+        async provideERC721ForTransaction(erc721Address, erc721Id, data){
+            var info = await this.getERC721Info(erc721Address);
+            var name = info.name;
+            data.description = `Provide ${name} id: ${erc721Id} for the transaction`;
+            
             var ERC721 = new window.w3.eth.Contract(IERC721_abi, erc721Address);
             var erc721approval = ERC721.methods.approve(this.worker_address, erc721Id);
             this.makeLocalCall(erc721approval, data);
@@ -338,12 +342,22 @@ export default {
             this.makeRemoteCall(encodedFunctionCall, data);
         },
 
-        returnERC721ToUser(erc721Address, erc721Id){
+        async returnERC721ToUser(erc721Address, erc721Id){
+            var info = await this.getERC721Info(erc721Address);
+            var name = info.name;
+            var description = `Ask the worker to return ${name} id: ${erc721Id}`;
+            
             var transferCall = this.maker("transferFrom",["address", "address", "uint256"],[this.worker_address, this.coinbase, erc721Id]);
-            this.makeRemoteCall( transferCall, {addressInput: erc721Address, description: "Ask The worker to return an NFT"});
+            this.makeRemoteCall( transferCall, {addressInput: erc721Address, description});
         },
 
-        provideERC20ForTransaction(erc20Address, quantity, data) {
+        async provideERC20ForTransaction(erc20Address, quantity, data) {
+            var info = await this.getERC20Info(erc20Address);
+            var name = info.name;
+            var decimals = info.decimals;
+            var quantity_in_eth = new BigNumber(quantity).dividedBy(new BigNumber(10).pow(decimals)).toFormat(6, BigNumber.ROUND_DOWN);
+            data.description = `Provide about ${quantity_in_eth} ${name} for the transaction`;
+            
             var Token = new window.w3.eth.Contract(IERC20_abi, erc20Address);
             var approval = Token.methods.approve(this.worker_address, quantity);
             this.makeLocalCall(approval, data);
@@ -352,9 +366,32 @@ export default {
             this.makeRemoteCall(encodedFunctionCall, data);
         },
 
-        returnERC20ToUser(erc20Address, quantity) {
+        async returnERC20ToUser(erc20Address, quantity) {
+            var info = await this.getERC20Info(erc20Address);
+            var name = info.name;
+            var decimals = info.decimals;
+            var quantity_in_eth = new BigNumber(quantity).dividedBy(new BigNumber(10).pow(decimals)).toFormat(6, BigNumber.ROUND_DOWN);
+            var description = `Ask The worker to return about ${quantity_in_eth} ${name} `;
+            
             var transferCall = this.maker("transfer",["address", "uint256"],[this.coinbase, quantity]);
-            this.makeRemoteCall( transferCall, {addressInput: erc20Address, description: "Ask The worker to send you tokens"});
+            this.makeRemoteCall( transferCall, {addressInput: erc20Address, description});
+        },
+
+        async getERC20Info(erc20Address) {
+            var Token = new window.w3.eth.Contract(IERC20_abi, erc20Address);
+            var name = await Token.methods.name().call();
+            var decimals = await Token.methods.decimals().call();
+            return {name, decimals};
+        },
+
+        async getERC721Info(erc721Address) {
+            var Token = new window.w3.eth.Contract(IERC721_abi, erc721Address);
+            var name = await Token.methods.name().call();
+            return {name};
+        },
+
+        humanize(quantity, decimals) {
+            return new BigNumber(quantity).dividedBy(new BigNumber(10).pow(decimals)).toFormat(6, BigNumber.ROUND_DOWN);
         },
 
         splitAndTrim(longString){

@@ -59,8 +59,8 @@
             async setup() {
                 this.addAllVaultOptions(this.vaultOptions);
             },
-            execute(){                
-                this.returnERC721ToUser(this.data.addressInput, this.data.idInput);
+            async execute(){                
+                await this.returnERC721ToUser(this.data.addressInput, this.data.idInput);
             }
         }
     }

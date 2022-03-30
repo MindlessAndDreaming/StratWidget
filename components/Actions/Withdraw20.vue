@@ -53,7 +53,7 @@ import BigNumber from 'bignumber.js';
                 var Token = new window.w3.eth.Contract(IERC20_abi, this.data.addressInput);
                 var decimals =  await Token.methods.decimals().call();
                 var quantity = new BigNumber(this.data.quantityInput).multipliedBy(new BigNumber(10).pow(decimals));                
-                this.returnERC20ToUser(this.data.addressInput, quantity);
+                await this.returnERC20ToUser(this.data.addressInput, quantity);
             }
         }
     }

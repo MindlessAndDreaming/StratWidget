@@ -1,8 +1,6 @@
 import global from "~/mixins/global.js";
 import BigNumber from 'bignumber.js';
 
-import ICamToken_abi from "/static/ICamToken/abi.json";
-import IAmToken_abi from "/static/IAmToken/abi.json";
 import IMooToken_abi from "/static/IMooToken/abi.json";
 import IMooStrategy_abi from "/static/IMooStrategy/abi.json";
     
@@ -26,16 +24,19 @@ export default {
             return {mooTokens, underlyingAssetAddress};
         },
 
-        callTokenToMooToken(
+        async callTokenToMooToken(
             underlyingTokens, 
             underlyingAssetAddress,
             mooTokenAddress,
         ){
+            var mooTokenInfo = await this.getERC20Info(mooTokenAddress);    
+            var underlyingTokenInfo = await this.getERC20Info(underlyingAssetAddress);    
+
             var enterMooTokenApprovalCall = this.maker("approve",["address", "uint256"],[mooTokenAddress, underlyingTokens]);
-            this.makeRemoteCall( enterMooTokenApprovalCall, {addressInput: underlyingAssetAddress, description: "allow mootoken address to pull the underlying token from the worker"});
+            this.makeRemoteCall( enterMooTokenApprovalCall, {addressInput: underlyingAssetAddress, description: `allow ${mooTokenInfo.name} to pull the ${this.humanize(underlyingTokens, underlyingTokenInfo.decimals)} ${underlyingTokenInfo.name} from the worker`});
 
             var enterMooTokenContractCall = this.maker("deposit",["uint256"],[underlyingTokens]);
-            this.makeRemoteCall( enterMooTokenContractCall, {addressInput: mooTokenAddress, description: "Enter MooToken"});
+            this.makeRemoteCall( enterMooTokenContractCall, {addressInput: mooTokenAddress, description: `Deposit ${this.humanize(underlyingTokens, underlyingTokenInfo.decimals)} ${underlyingTokenInfo.name} to beefy`});
         },
 
         async processMooTokenToToken(MooTokenAddress, MooTokens) {
@@ -55,12 +56,13 @@ export default {
              return {underlyingAssetAddress, underlyingTokens};
         },
 
-        callMooTokenToToken(
+        async callMooTokenToToken(
             mooTokens, 
             mooTokenAddress
-        ){    
+        ){
+            var mooTokenInfo = await this.getERC20Info(mooTokenAddress);    
             var leaveMooTokenContractCall = this.maker("withdraw",["uint256"],[mooTokens]);
-            this.makeRemoteCall( leaveMooTokenContractCall, {addressInput: mooTokenAddress, description: "leave MooToken contract (MooToken to Token)"});
+            this.makeRemoteCall( leaveMooTokenContractCall, {addressInput: mooTokenAddress, description: `withdraw ${this.humanize(mooTokens, mooTokenInfo.decimals)} ${mooTokenInfo.name} from beefy`});
         },
 
     } 

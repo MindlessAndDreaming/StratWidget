@@ -31,12 +31,13 @@
 <script>
     import BigNumber from 'bignumber.js';
     import global from "~/mixins/global.js";
+    import qi from "~/mixins/qi.js";
     import swap from "~/mixins/swap.js";
     import IERC20stablecoin_abi from "/static/IERC20Stablecoin/abi.json";
     import IERC20_abi from "/static/IERC20/abi.json";
 
     export default {
-        mixins: [global, swap],
+        mixins: [global, swap, qi],
         computed: {
             tokenInfo() {
                 if(this.data.tokenData.name !== "") {
@@ -113,30 +114,38 @@
                 var process = this.processMooTokenToToken(collateralAddress, withdrawableCollateral);
                 var tokensReceived = new BigNumber(process.underlyingTokens).dividedToIntegerBy(1.01);
 
-                this.afterProcessing();
-                
-                var payBackApprovalCall = this.maker("approve",["address", "uint256"],[this.data.addressInput, vaultDebt]);
-                this.makeRemoteCall( payBackApprovalCall, {addressInput: await vault.methods.mai().call(), description: "allow the vault address to pull MAI from the worker to pay back the loan"});
+ 
+                 //payback tokens
+                await this.callPayBackToken(
+                    this.data.addressInput,
+                    this.data.vaultIDInput,
+                    vaultDebt
+                );
 
-                var payBackCall = this.maker("payBackToken",["uint256", "uint256"],[new BigNumber(this.data.vaultIDInput), vaultDebt]);
-                this.makeRemoteCall( payBackCall, {addressInput: this.data.addressInput, description: "pay back MAI"});
+                //withdraw collateral
+                await this.callWithdrawCollateral(
+                    this.data.addressInput,
+                    this.data.vaultIDInput,
+                    collateralAddress,
+                    withdrawableCollateral
+                );
 
-                var withdrawForSaleCall = this.maker("withdrawCollateral",["uint256", "uint256"],[this.data.vaultIDInput, withdrawableCollateral]);
-                this.makeRemoteCall( withdrawForSaleCall, {addressInput: this.data.addressInput, description: "withdraw enough collateral to pay the flashswap"});
-
-
-                this.callMooTokenToToken(
+               
+                await this.callMooTokenToToken(
                     withdrawableCollateral,
                     collateralAddress
                 );
 
-                this.callSwap(
+                await this.callSwap(
                     swapRouter,
                     tokensReceived,
                     process.underlyingAssetAddress,
                     minMAIExpected,
                     this.splitAndTrim(this.data.path)
                 );
+
+                this.afterProcessing();
+
             }
         }
     }

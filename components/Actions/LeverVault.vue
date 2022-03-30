@@ -41,11 +41,12 @@
     import BigNumber from 'bignumber.js';
     import global from "~/mixins/global.js";
     import swap from "~/mixins/swap.js";
+    import qi from "~/mixins/qi.js";
     import IERC20stablecoin_abi from "/static/IERC20Stablecoin/abi.json";
     import IUniswapV2Router02_abi from "/static/IUniswapV2Router02/abi.json";
 
     export default {
-        mixins: [global, swap],
+        mixins: [global, swap, qi],
         computed: {
             tokenInfo() {
                 if(this.data.tokenData.name !== "") {
@@ -117,14 +118,12 @@
                 var amountsOut = await swapRouterContract.methods.getAmountsOut(loanValue, this.splitAndTrim(this.data.path)).call();
                 var collateralExpected = amountsOut[amountsOut.length - 1];
                 var minCollateralIn = new BigNumber(collateralExpected).dividedToIntegerBy(1.001); // 0.1% slippage 
-
-                this.afterProcessing();
                 
                 if(calculatedCollateralIn.isGreaterThan(new BigNumber(collateralExpected).times(1.05))) {
                     alert("You might suffer a large slippage ( > 5%), most probably this is an issue in the path");
                 }
                 
-                this.callSwap(
+                await this.callSwap(
                     swapRouterAddress,
                     loanValue,
                     maiAddress,
@@ -132,14 +131,19 @@
                     this.splitAndTrim(this.data.path)
                 );
                 
-                var depositApprovalCall = this.maker("approve",["address", "uint256"],[this.data.addressInput, minCollateralIn]);
-                this.makeRemoteCall( depositApprovalCall, {addressInput: collateralAddress, description: "allow the vault address to pull Collateral from the worker to deposit into the vault"});
+                await this.callDepositCollateral(
+                    this.data.addressInput, 
+                    this.data.vaultIDInput, 
+                    collateralAddress, 
+                    minCollateralIn);
 
-                var depositCall = this.maker("depositCollateral",["uint256", "uint256"],[this.data.vaultIDInput, minCollateralIn]);
-                this.makeRemoteCall( depositCall, {addressInput: this.data.addressInput, description: "deposit Collateral"});
+                await this.callBorrowToken(
+                    this.data.addressInput, 
+                    this.data.vaultIDInput, 
+                    amountToBorrow);
+                
+                this.afterProcessing();
 
-                var borrowTokenCall = this.maker("borrowToken",["uint256", "uint256"],[this.data.vaultIDInput, amountToBorrow]);
-                this.makeRemoteCall( borrowTokenCall, {addressInput: this.data.addressInput, description: "borrow enough MAI to pay the flashswap"});                
             }
         }
     }
