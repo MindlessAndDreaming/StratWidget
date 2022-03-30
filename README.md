@@ -7,10 +7,21 @@ Select strategies in the landing page.
 
 First, choose your vault, and vault ID
 
+Provide an allowance for the nft (vault) to perform the action on
+
+If you aim to lever a vault, provide an allowance for the contract to use
+
 Select Your action (Repay, Lever, Liquidate)
+(All strategies use flashloans where possible) 
+(WAIT ... )
 
-Finally, Withdraw your NFT 
+Withdraw your NFT 
 
+(All these are done before you execute, or you might lose your VAULT)
+
+Finally EXECUTE.
+
+contracts are in ```/contracts ```
 
 ## Build Setup
 
