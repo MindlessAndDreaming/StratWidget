@@ -1,6 +1,17 @@
 # StratWidget (ALPHA)
 interact with all contracts using javascript
 
+Select strategies in the landing page.
+
+![strategies landing page ](https://imgur.com/WXHFmqv)
+
+First, choose your vault, and vault ID
+
+Select Your action (Repay, Lever, Liquidate)
+
+Finally, Withdraw your NFT 
+
+
 ## Build Setup
 
 ```bash
