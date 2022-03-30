@@ -1,9 +1,7 @@
 # StratWidget (ALPHA)
 interact with all contracts using javascript
 
-Select strategies in the landing page.
-
-![strategies landing page ](https://i.imgur.com/WXHFmqv.jpeg)
+Select strategies on the landing page.
 
 First, choose your vault, and vault ID
 
@@ -20,6 +18,40 @@ Withdraw your NFT
 (All these are done before you execute, or you might lose your VAULT)
 
 Finally EXECUTE.
+
+e.g
+
+to leverage this vault up using flashloans
+![vault 1215 camaave](https://i.imgur.com/74OFmub.jpeg)
+
+provide mai allowance for camvault 1215
+![provide mai allowance](https://i.imgur.com/nEQEc0R.jpg)
+
+allow the worker contract to take vault 1215
+![allow nft](https://i.imgur.com/vU4EkuB.jpg)
+
+select lever MAI vault (CAM)
+![select lever mai vault (cam)](https://i.imgur.com/XHyRWiJ.jpg)
+
+enter details
+![enter details](https://i.imgur.com/114twK5.jpg)
+
+ensure the vault is returned
+![withdrw nft](https://i.imgur.com/fGxk7t6.jpg)
+
+this is the transaction list
+![transactions](https://i.imgur.com/LqNBfSk.jpg)
+
+execute
+![execute](https://i.imgur.com/HTsAxUQ.jpg)
+
+this is the transaction on polygonscan
+![polygonscan transaction](https://polygonscan.com/tx/0xaf529d27b462e6bc1d59add3a8de57235680406b87d827f59198adfaeea6b8ce)
+
+the results
+![results](https://i.imgur.com/BsVhB8E.jpg)
+
+please do not use large token amounts, the slippage and buffers are still being calibrated i.e we asked for a 161 cdr and ended up with 156 (adjust up 5%?)
 
 contracts are in ```/contracts ```
 
