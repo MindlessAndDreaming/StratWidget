@@ -1,3 +1,5 @@
+# There be bugs here
+
 # StratWidget (ALPHA)
 interact with all contracts using javascript
 
