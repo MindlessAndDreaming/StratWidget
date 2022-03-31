@@ -57,7 +57,8 @@
             <ActionsLiquidateVault  />
             <ActionsLiquidateCamVault  />
             <ActionsLiquidateMooSingleVault  />
-
+            <ActionsEnterCamContract  />
+            <ActionsLeaveCamContract  />
 
         </div>
     </b-overlay>
@@ -137,6 +138,15 @@
                 console.log("finishedProcessing");
                 this.showOverlay = false; 
             });
+            this.$nuxt.$on("info", (message) => {
+                console.log(message);
+                var info = {
+                    addressInput : "0x0", 
+                    description : message,
+                    isMessage : true,
+                };
+                this.taskList.push(this.createTaskFromData(info, null)); 
+            });
             this.$nuxt.$on("createdRemoteCall", (result) => {
                 this.taskList.push(this.createTaskFromData(result.data, result.encodedFunctionCall)); 
             });
@@ -147,9 +157,9 @@
             });
             this.$nuxt.$on("requestedFlashLoan", (result) => {
                 console.log(JSON.stringify(result));
-               this.flashLoan.provider = result.loan.provider;
-               this.flashLoan.quantityInput = result.loan.quantity_in_eth;
-               this.flashLoan.toggled = true;
+                this.flashLoan.provider = result.loan.provider;
+                this.flashLoan.quantityInput = result.loan.quantity_in_eth;
+                this.flashLoan.toggled = true;
             });
 
             this.updateActions();
@@ -171,6 +181,14 @@
                 this.addAction({
                     "name":  "Withdraw AN NFT",
                     "modal": "withdraw721"
+                });
+                this.addAction({
+                    "name":  "Enter CamToken Contract",
+                    "modal": "enterCamContract"
+                });
+                this.addAction({
+                    "name":  "Leave CamToken Contract",
+                    "modal": "leaveCamContract"
                 });
                 this.addAction({
                     "name":  "Repay MAI Vault (single)",
@@ -242,7 +260,8 @@
                     description: data.description,
                     address: data.addressInput,
                     queued: true,
-                    local: data.local ? true : false 
+                    local: data.local ? true : false,
+                    isMessage: data.isMessage ? true : false
                 }
             },
 
@@ -365,7 +384,7 @@
                     var transactions = [];
 
                     for(let i=0; i<this.taskList.length; i++){
-                        if(this.taskList[i].queued && !this.taskList[i].local){
+                        if(this.taskList[i].queued && !this.taskList[i].local && !this.taskList[i].isMessage){
                             transactions.push({
                                 To: this.taskList[i].address,
                                 Data: this.taskList[i].encodedFunctionCall

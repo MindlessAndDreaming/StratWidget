@@ -1,11 +1,82 @@
 import global from "~/mixins/global.js";
 import BigNumber from 'bignumber.js';
+import IERC721_abi from "/static/IERC721/abi.json";
 import IERC20stablecoin_abi from "/static/IERC20Stablecoin/abi.json";
 
 
 export default {
     mixins:[global],
     methods: {
+        async addAllVaultOptions(vaultOptions) {
+            var networkId = this.$store.state.myAccount.networkId
+            var chainId = `${networkId}`;
+            var vaults = this.data.vaults[chainId];
+            var allvaults = [];
+            for (var key in vaults) {
+                allvaults = allvaults.concat(vaults[key]);
+            }
+            allvaults.map((vaultAddress) => {
+                let vault = new window.w3.eth.Contract(IERC721_abi, vaultAddress);
+                vault.methods.name().call((_, name) => {
+                    vaultOptions.push({
+                        text: name + " - " + vaultAddress,
+                        value: vaultAddress
+                    });
+                });
+            }); 
+        },
+
+        async addVaultOptions (vaultType, vaultOptions) {
+            var networkId = this.$store.state.myAccount.networkId
+            var chainId = `${networkId}`;
+            var vaults = this.data.vaults[chainId][vaultType];
+
+            if (vaults != undefined) {
+                vaults.map((vaultAddress) => {
+                    let vault = new window.w3.eth.Contract(IERC721_abi, vaultAddress);
+                    vault.methods.name().call((_, name) => {
+                        vaultOptions.push({
+                            text: name + " - " + vaultAddress,
+                            value: vaultAddress
+                        });
+                    });
+                });
+            } 
+
+        },
+
+        async getPriceSourceDecimals (vault) {
+            try {
+                console.log("trying collateral");
+                return await vault.methods.collateralDecimals().call();
+            } catch (error) {
+                try {
+                    console.log("trying priceSource");
+                    return await vault.methods.priceSourceDecimals().call();
+                } catch (error) {
+                    console.log("trying backup");
+                    return 8;
+                }
+            }  
+        },
+
+        async displayVaultDebt (data, {input="vaultIDInput", output="vaultData", vaultAddress="addressInput"} = {}) {
+            try {
+                var vault = new window.w3.eth.Contract(IERC20stablecoin_abi, data[vaultAddress]);
+                var debt = await vault.methods.vaultDebt(data[input]).call();
+                var currentCollateral = await vault.methods.vaultCollateral(data[input]).call();
+                var price = await vault.methods.getEthPriceSource().call();
+                var withdrawableCollateral = new BigNumber(currentCollateral).multipliedBy(0.995).integerValue(BigNumber.ROUND_DOWN);
+                var MAIPerToken = new BigNumber(price).dividedBy(new BigNumber(10).pow(8));
+                var surplusValue = withdrawableCollateral.multipliedBy(MAIPerToken).minus(debt).multipliedBy(0.99).integerValue(BigNumber.ROUND_DOWN);
+                
+                data[output].surplusValue = surplusValue;
+                data[output].debt = debt;
+            } catch (error) {
+                console.log(error);
+            }  
+        },
+
         async callDepositCollateral(vaultAddress, vaultId, collateralAddress, quantity) {
             var tokenInfo = await this.getERC20Info(collateralAddress);
             var vaultInfo = await this.getERC721Info(vaultAddress);

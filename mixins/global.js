@@ -1,7 +1,5 @@
 import IERC20_abi from "/static/IERC20/abi.json";
 import IERC721_abi from "/static/IERC721/abi.json";
-import IERC20stablecoin_abi from "/static/IERC20Stablecoin/abi.json";
-
 
 import { BigNumber } from "bignumber.js";
 
@@ -54,13 +52,6 @@ export default {
                             "0x506533B9C16eE2472A6BF37cc320aE45a0a24F11",
                             "0x7d36999a69f2b99bf3fb98866cbbe47af43696c8",
                         ],
-                        "cam": [
-                            "0x88d84a85A87ED12B8f098e8953B322fF789fCD1a", // cam wmatic vlt
-                            "0x11A33631a5B5349AF3F165d2B7901A4d67e561ad", // cam weth vlt
-                            "0x578375c3af7d61586c2C3A7BA87d2eEd640EFA40", // cam aave vlt
-                            "0x7dda5e1a389e0c1892caf55940f5fce6588a9ae0",
-                            "0xD2FE44055b5C874feE029119f70336447c8e8827",
-                        ],
                         "vghst": [
                             "0x1f0aa72b980d65518e88841ba1da075bd43fa933" // vghst vlt
                         ],
@@ -108,9 +99,9 @@ export default {
         worker_address () {
             var netWorkId = this.$store.state.myAccount.networkId;
             if (netWorkId == 250){
-                return "0x64E27d38c0cF80Cdf9118Fa065287126d1b4Fb0e";
+                return "0x966234BB4dF1DFF63810738aC086C0c79b1BB7C6";
             }
-            return "0x982bB8A8Ce4443bC162cc225776D60eAe5a92213";
+            return "0x1EA153B05DfAa5E070d04c7fD171679D258eDb31";
         },
         mai () {
             var netWorkId = this.$store.state.myAccount.networkId;
@@ -160,43 +151,6 @@ export default {
         },
     },
     methods: {
-        async addAllVaultOptions(vaultOptions) {
-            var networkId = this.$store.state.myAccount.networkId
-            var chainId = `${networkId}`;
-            var vaults = this.data.vaults[chainId];
-            var allvaults = [];
-            for (var key in vaults) {
-                allvaults = allvaults.concat(vaults[key]);
-            }
-            allvaults.map((vaultAddress) => {
-                let vault = new window.w3.eth.Contract(IERC721_abi, vaultAddress);
-                vault.methods.name().call((_, name) => {
-                    vaultOptions.push({
-                        text: name + " - " + vaultAddress,
-                        value: vaultAddress
-                    });
-                });
-            }); 
-        },
-        async addVaultOptions (vaultType, vaultOptions) {
-            var networkId = this.$store.state.myAccount.networkId
-            var chainId = `${networkId}`;
-            var vaults = this.data.vaults[chainId][vaultType];
-
-            if (vaults != undefined) {
-                vaults.map((vaultAddress) => {
-                    let vault = new window.w3.eth.Contract(IERC721_abi, vaultAddress);
-                    vault.methods.name().call((_, name) => {
-                        vaultOptions.push({
-                            text: name + " - " + vaultAddress,
-                            value: vaultAddress
-                        });
-                    });
-                });
-            } 
-
-        },
-
         async executeContractMethod(ContractMethod) {
             var fun = this;
             return ContractMethod.estimateGas({
@@ -240,6 +194,10 @@ export default {
             this.$nuxt.$emit("requestedFlashLoan", {loan});
         },
 
+        inform(message) {
+            this.$nuxt.$emit("info", message);
+        },
+
         beforeProcessing() {
             this.$nuxt.$emit("startedProcessing", true);
         },
@@ -265,37 +223,6 @@ export default {
             return encodedFunctionCall;
         },
 
-        async displayVaultDebt (data, {input="vaultIDInput", output="vaultData", vaultAddress="addressInput"} = {}) {
-            try {
-                var vault = new window.w3.eth.Contract(IERC20stablecoin_abi, data[vaultAddress]);
-                var debt = await vault.methods.vaultDebt(data[input]).call();
-                var currentCollateral = await vault.methods.vaultCollateral(data[input]).call();
-                var price = await vault.methods.getEthPriceSource().call();
-                var withdrawableCollateral = new BigNumber(currentCollateral).multipliedBy(0.995).integerValue(BigNumber.ROUND_DOWN);
-                var MAIPerToken = new BigNumber(price).dividedBy(new BigNumber(10).pow(8));
-                var surplusValue = withdrawableCollateral.multipliedBy(MAIPerToken).minus(debt).multipliedBy(0.99).integerValue(BigNumber.ROUND_DOWN);
-                
-                data[output].surplusValue = surplusValue;
-                data[output].debt = debt;
-            } catch (error) {
-                console.log(error);
-            }  
-        },
-
-        async getPriceSourceDecimals (vault) {
-            try {
-                console.log("trying collateral");
-                return await vault.methods.collateralDecimals().call();
-            } catch (error) {
-                try {
-                    console.log("trying priceSource");
-                    return await vault.methods.priceSourceDecimals().call();
-                } catch (error) {
-                    console.log("trying backup");
-                    return 8;
-                }
-            }  
-        },
 
         async displayERC20 (data, {input="addressInput", output="tokenData"} = {}) {
             const e18 = new BigNumber("1e18");
@@ -306,7 +233,7 @@ export default {
                 batch.add(token.methods.symbol().call.request(( _ , result) => { data[output].symbol = result; }));
                 batch.add(token.methods.balanceOf(this.coinbase).call.request(( _ , result) => { 
                     data.tokenData.balance = result; 
-                    data.tokenData.humanBalance = new BigNumber(result).dividedBy(e18).toFixed(4); 
+                    data.tokenData.humanBalance = new BigNumber(result).dividedBy(e18).toFormat(5, BigNumber.ROUND_DOWN); 
                 }));
                 batch.execute();
             } catch (error) {

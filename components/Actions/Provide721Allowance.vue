@@ -22,10 +22,11 @@
 
 <script>
     import global from "~/mixins/global.js";
+    import qi from "~/mixins/qi.js";
     import IERC721_abi from "/static/IERC721/abi.json";
 
     export default {
-        mixins: [global],
+        mixins: [global, qi],
         computed: {
             tokenInfo() {
                 if(this.data.tokenData.name !== "") {
