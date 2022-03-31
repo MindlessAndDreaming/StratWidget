@@ -10,19 +10,6 @@ export default {
     mixins:[global],
     data() {
         return {
-            data: {
-                vaults: {
-                    "137":{
-                        cam: [
-                            "0x88d84a85A87ED12B8f098e8953B322fF789fCD1a", // cam wmatic vlt
-                            "0x11A33631a5B5349AF3F165d2B7901A4d67e561ad", // cam weth vlt
-                            "0x578375c3af7d61586c2C3A7BA87d2eEd640EFA40", // cam aave vlt
-                            "0x7dda5e1a389e0c1892caf55940f5fce6588a9ae0",
-                            "0xD2FE44055b5C874feE029119f70336447c8e8827",
-                        ]
-                    }
-                }
-            }, 
             cam_addresses: {
                 "137" :[
                     "0x22965e296d9a0Cd0E917d6D70EF2573009F8a1bB", // cam USDC

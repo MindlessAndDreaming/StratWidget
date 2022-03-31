@@ -40,7 +40,7 @@ export default {
                             "0xa3fa99a148fa48d14ed51d610c367c61876997f1" // mai vlt
                         ],
                         "single": [
-                            "0x3fd939B017b31eaADF9ae50C7fF7Fa5c0661d47C",
+                            "0x3fd939B017b31eaADF9ae50C7fF7Fa5c0661d47C", // weth vlt
                             "0x61167073E31b1DAd85a3E531211c7B8F1E5cAE72",
                             "0x98B5F32dd9670191568b661a3e847Ed764943875",
                             "0x701A1824e5574B0b6b1c8dA808B184a7AB7A2867",
@@ -57,6 +57,13 @@ export default {
                         ],
                         "stkdao": [
                             "0x57cbf36788113237d64e46f25a88855c3dff1691"
+                        ],
+                        "cam": [
+                            "0x88d84a85A87ED12B8f098e8953B322fF789fCD1a", // cam wmatic vlt
+                            "0x11A33631a5B5349AF3F165d2B7901A4d67e561ad", // cam weth vlt
+                            "0x578375c3af7d61586c2C3A7BA87d2eEd640EFA40", // cam aave vlt
+                            "0x7dda5e1a389e0c1892caf55940f5fce6588a9ae0",
+                            "0xD2FE44055b5C874feE029119f70336447c8e8827",
                         ]
                     },
                     "250": {
@@ -88,14 +95,14 @@ export default {
             return 200;
         },
         gas_price () {
-            var gas_price = 50;
+            var gas_price = 75;
             if (this.networkId == 250){
                 gas_price = 300;
             }
             return new BigNumber(gas_price).multipliedBy("1e9");
         },
         gas_amount () {
-            var gas_amount = "1999999";
+            var gas_amount = "1111111";
             return gas_amount;
         },
         worker_address () {

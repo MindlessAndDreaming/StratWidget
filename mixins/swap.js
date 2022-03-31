@@ -70,6 +70,14 @@ export default {
                         this.matic_mai 
                     ]
                 },
+                "0x3fd939B017b31eaADF9ae50C7fF7Fa5c0661d47C": {  // matic weth vlt
+                    router: this.quickswap_router,
+                    path: [
+                        "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619", // matic weth 
+                        this.matic_usdc, 
+                        this.matic_mai
+                    ]
+                },
                 "0x7CbF49E4214C7200AF986bc4aACF7bc79dd9C19a": {  // matic cxdoge_vlt
                     router: this.quickswap_router,
                     path: [
