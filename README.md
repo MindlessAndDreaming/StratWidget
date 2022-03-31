@@ -1,4 +1,4 @@
-# There be bugs here
+# There be less bugs here (than yesterday)
 
 # StratWidget (ALPHA)
 interact with all contracts using javascript
