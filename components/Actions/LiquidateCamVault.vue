@@ -35,7 +35,6 @@
     import qi from "~/mixins/qi.js";
     import swap from "~/mixins/swap.js";
     import IERC20stablecoin_abi from "/static/IERC20Stablecoin/abi.json";
-    import IERC20_abi from "/static/IERC20/abi.json";
 
     export default {
         mixins: [global, cam, swap, qi],
@@ -139,6 +138,10 @@
                     minMAIExpected,
                     this.splitAndTrim(this.data.path)
                 );
+
+                var withdrawableMAI = minMAIExpected - vaultDebt;
+                this.inform(`You Should Withdraw ${this.humanize(withdrawableMAI, 18)} MiMATIC`);
+
 
                 this.afterProcessing();
 

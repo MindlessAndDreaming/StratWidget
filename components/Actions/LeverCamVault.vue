@@ -140,18 +140,21 @@
                     minBaseCollateralIn, 
                     process.underlyingAssetAddress,
                     collateralAddress,
-                    process.ATokenAddress);
+                    process.ATokenAddress
+                );
 
                 await this.callDepositCollateral(
                     this.data.addressInput, 
                     this.data.vaultIDInput, 
                     collateralAddress, 
-                    tokensToDeposit);
+                    tokensToDeposit
+                );
 
                 await this.callBorrowToken(
                     this.data.addressInput, 
                     this.data.vaultIDInput, 
-                    amountToBorrow);
+                    amountToBorrow
+                );
 
                 this.afterProcessing();
 

@@ -144,6 +144,9 @@
                     this.splitAndTrim(this.data.path)
                 );
 
+                var withdrawableMAI = minMAIExpected - vaultDebt;
+                this.inform(`You Should Withdraw ${this.humanize(withdrawableMAI, 18)} MiMATIC`);
+
                 this.afterProcessing();
 
             }
