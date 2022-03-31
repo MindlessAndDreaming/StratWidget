@@ -107,7 +107,7 @@
                 this.requestMAIloan("quick_mai_usdt", this.borrowable);
                 var backing = new BigNumber(this.data.quantityInput).multipliedBy(10 ** 18); // mai decimals 
                 var loanValue = new BigNumber(this.borrowable).multipliedBy(10 ** 18); // mai decimals
-                var amountToBorrow = loanValue.multipliedBy(1000).dividedToIntegerBy(995).minus(backing); // borrow fee plus buffer - amount to borrow from the vault at the end of the transaction
+                var amountToBorrow = (loanValue.multipliedBy(1000).dividedToIntegerBy(995)).minus(backing); // borrow fee plus buffer - amount to borrow from the vault at the end of the transaction
 
                 var priceSourceDecimals = await this.getPriceSourceDecimals(vault);
                 var price = await vault.methods.getEthPriceSource().call();
@@ -117,11 +117,11 @@
                 var swapRouterContract = new window.w3.eth.Contract(IUniswapV2Router02_abi, swapRouterAddress);
                 var amountsOut = await swapRouterContract.methods.getAmountsOut(loanValue, this.splitAndTrim(this.data.path)).call();
                 var baseCollateralExpected = amountsOut[amountsOut.length - 1];
-                var minBaseCollateralIn = new BigNumber(baseCollateralExpected).dividedToIntegerBy(1.015); // 1.5% slippage 
+                var minBaseCollateralIn = new BigNumber(baseCollateralExpected).dividedToIntegerBy(1.01); // 0.5% slippage 
 
                 var process = await this.processTokenToCamToken(collateralAddress, minBaseCollateralIn);
                 console.log(JSON.stringify(process)); 
-                var tokensToDeposit = process.camTokens;
+                var tokensToDeposit = new BigNumber(process.camTokens).dividedToIntegerBy(1.005); // alignment?
 
                 if(calculatedCollateralIn.isGreaterThan(new BigNumber(tokensToDeposit).times(1.05))) {
                      alert("You might suffer a large slippage ( > 5%), most probably this is an issue in the path");

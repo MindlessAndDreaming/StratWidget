@@ -110,7 +110,7 @@
                 }
 
                 this.requestMAIloan("spooky_mai_usdc", new BigNumber(amountToPay).dividedBy(new BigNumber(10).pow(18)).toFormat(2, BigNumber.ROUND_UP));
-                var totalFreeMAIWanted = new BigNumber(amountToPay).times(1000).dividedToIntegerBy(950);
+                var totalFreeMAIWanted = new BigNumber(amountToPay).times(1000).dividedToIntegerBy(970);
 
                 var price = await vault.methods.getEthPriceSource().call();
                 var MAIPerToken = new BigNumber(price).dividedBy(new BigNumber(10 ** priceSourceDecimals));

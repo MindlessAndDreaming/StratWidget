@@ -91,7 +91,7 @@
                 
                 var vault = new window.w3.eth.Contract(IERC20stablecoin_abi, this.data.addressInput);
                 var collateralAddress = await vault.methods.collateral().call();
-                var collateralDecimals = await vault.methods.priceSourceDecimals().call();
+                var collateralDecimals = await this.getPriceSourceDecimals(vault);
                 
                 var collateralContract = new window.w3.eth.Contract(IERC20_abi, collateralAddress);
                 var decimals = await collateralContract.methods.decimals().call();

@@ -109,7 +109,7 @@
                 var loanValue = new BigNumber(this.borrowable).multipliedBy(10 ** 18); // mai decimals
                 var amountToBorrow = loanValue.multipliedBy(1000).dividedToIntegerBy(995).minus(backing); // borrow fee plus buffer (amount to borrow from the vault at the end of the transaction)
 
-                var priceSourceDecimals = await vault.methods.priceSourceDecimals().call();
+                var priceSourceDecimals = await this.getPriceSourceDecimals(vault);
                 var price = await vault.methods.getEthPriceSource().call();
                 var MAIPerToken = new BigNumber(price).dividedBy(new BigNumber(10).pow(priceSourceDecimals));
                 var calculatedCollateralIn = loanValue.dividedBy(MAIPerToken);

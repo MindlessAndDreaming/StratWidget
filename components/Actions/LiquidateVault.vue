@@ -89,7 +89,7 @@
                 
                 var vault = new window.w3.eth.Contract(IERC20stablecoin_abi, this.data.addressInput);
                 var collateralAddress = await vault.methods.collateral().call();
-                var collateralDecimals = await vault.methods.priceSourceDecimals().call();
+                var collateralDecimals = await this.getPriceSourceDecimals(vault);
                 
                 var vaultDebt = await vault.methods.vaultDebt(this.data.vaultIDInput).call();
                 var loanPlatform = this.$store.state.myAccount.networkId != 137 ? "spooky_mai_usdc": "quick_mai_usdt";
