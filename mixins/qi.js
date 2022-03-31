@@ -6,6 +6,22 @@ import IERC20stablecoin_abi from "/static/IERC20Stablecoin/abi.json";
 
 export default {
     mixins:[global],
+    computed: {
+        vaultDebt() {
+            if(this.data.vaultData.debt > 0) {
+                return "Vault Debt (Flashloan this amount) > " + new BigNumber(this.data.vaultData.debt).dividedBy(new BigNumber(10).pow(18)).toFormat(5, BigNumber.ROUND_UP);
+            } else {
+                return "";
+            }
+        },
+        vaultWithdrawableSurplus() {
+            if(this.data.vaultData.surplusValue > 0) {
+                return "Withdrawable Surplus MAI > " + new BigNumber(this.data.vaultData.surplusValue).dividedBy(new BigNumber(10).pow(18)).toFormat(5, BigNumber.ROUND_UP);
+            } else {
+                return "";
+            }
+        },
+    },
     methods: {
         async addAllVaultOptions(vaultOptions) {
             var networkId = this.$store.state.myAccount.networkId

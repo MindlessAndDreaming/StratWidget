@@ -79,15 +79,17 @@ export default {
 
     computed: {
         coinbase () {
-            return this.$store.state.myAccount.coinbase
+            return this.$store.state.myAccount.coinbase;
+        },
+        networkId () {
+            return this.$store.state.myAccount.networkId;
         },
         harvest_point(){
             return 200;
         },
         gas_price () {
-            var netWorkId = this.$store.state.myAccount.networkId;
             var gas_price = 50;
-            if (netWorkId == 250){
+            if (this.networkId == 250){
                 gas_price = 300;
             }
             return new BigNumber(gas_price).multipliedBy("1e9");
@@ -97,30 +99,13 @@ export default {
             return gas_amount;
         },
         worker_address () {
-            var netWorkId = this.$store.state.myAccount.networkId;
-            if (netWorkId == 250){
-                return "0x966234BB4dF1DFF63810738aC086C0c79b1BB7C6";
-            }
-            return "0x1EA153B05DfAa5E070d04c7fD171679D258eDb31";
+            return this.$store.state.myAccount.workerAddress
         },
         mai () {
             var netWorkId = this.$store.state.myAccount.networkId;
             return this.maiAddresses[netWorkId];
         },
-        vaultDebt() {
-            if(this.data.vaultData.debt > 0) {
-                return "Vault Debt (Flashloan this amount) > " + new BigNumber(this.data.vaultData.debt).dividedBy(new BigNumber(10).pow(18)).toFormat(2, BigNumber.ROUND_UP);
-            } else {
-                return "";
-            }
-        },
-        vaultWithdrawableSurplus() {
-            if(this.data.vaultData.surplusValue > 0) {
-                return "Withdrawable Surplus MAI > " + new BigNumber(this.data.vaultData.surplusValue).dividedBy(new BigNumber(10).pow(18)).toFormat(2, BigNumber.ROUND_UP);
-            } else {
-                return "";
-            }
-        },
+
         flashOptions() { 
             return [
                 {
