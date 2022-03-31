@@ -1,72 +1,77 @@
 <template>
     <b-overlay :show="showOverlay" rounded="sm">
-        <div>
-            <v-select label="name" :options="actions"  @input="addTask"/>
-            <div v-if="loading" class="loading-page">
-                <p>{{loadingMessage}}</p>
-            </div>
-            <b-row> 
-                <b-col class="m-3">
-                    Worker Address &nbsp; <a :href="`https://${explorer_url}/address/${worker_address}`">{{worker_address}}</a>
-                </b-col>
-            </b-row>
-            <div class="accordion" role="tablist">
-                <b-card no-body class="mb-1"  v-for="task in activeTasks" v-bind:key="task.id">
-                    <b-card-header header-tag="header" class="p-1" role="tab">
-                        <b-button squared block v-b-toggle="task.id" variant="outline-info">{{ task.description }}</b-button>
-                    </b-card-header>
-                    <b-collapse :id="task.id" accordion="my-accordion" role="tabpanel">
-                        <b-card-body>
-                            <b-card-text v-for="(value, key, index) in task" v-bind:key="index">
-                                {{key}} : {{value}} <br/>
-                            </b-card-text>
-                        </b-card-body>
-                    </b-collapse>
-                </b-card>
-            </div>
-
-            <b-button :pressed.sync="flashLoan.toggled" squared variant="outline-secondary" @click="setFlashLoan" >{{ wrapMessage }}</b-button>
-            <b-button squared variant="warning" @click="doTasks" >execute</b-button>
-            <b-button squared variant="success" @click="reset" >reset</b-button>
-            
-            <b-modal id="wrapperModal" @ok="setFlashLoan" >
-                <form ref="setFlash" @submit="setFlashLoan">
-                    <b-form-group
-                        label="Select your FlashLoan provider"
-                        label-for="flash-select">
-                        <b-form-select v-model="flashLoan.provider" :options="flashOptions" id="flash-select"></b-form-select>
-                    </b-form-group>
-                    <b-form-group
-                        label="Quantity"
-                        label-for="quantity-input">
-                        <b-form-input v-model='flashLoan.quantityInput' id="quantity-input"></b-form-input>
-                    </b-form-group>
-                </form>
-            </b-modal>
-
-            <ActionsProvideAllowance />
-            <ActionsProvide721Allowance />
-            <ActionsWithdraw20 />
-            <ActionsRepayVault />
-            <ActionsWithdraw721  />
-            <ActionsRepayCamVault  />
-            <ActionsRepayMooSingleVault  />
-            <ActionsLeverVault  />
-            <ActionsLeverCamVault  />
-            <ActionsLeverMooSingleVault  />
-            <ActionsLiquidateVault  />
-            <ActionsLiquidateCamVault  />
-            <ActionsLiquidateMooSingleVault  />
-            <ActionsEnterCamContract  />
-            <ActionsLeaveCamContract  />
-
+        <v-select label="name" :options="actions"  @input="addTask"/>
+        <div v-if="loading" class="loading-page">
+            <p>{{loadingMessage}}</p>
         </div>
+        <b-row>
+
+            <b-col v-if="worker_address" class="m-3">
+                Worker Address &nbsp; <a :href="`https://${explorer_url}/address/${worker_address}`">{{worker_address}}</a>
+                <b-button @click="deleteWorkerConfirmBox()" variant="warning">Retire This Worker</b-button>
+            </b-col>
+            <b-col v-else class="m-3">
+                  <b-button @click="deployWorker()" variant="warning">Deploy Worker</b-button>
+            </b-col>
+            
+        </b-row>
+        <div class="accordion" role="tablist">
+            <b-card no-body class="mb-1"  v-for="task in activeTasks" v-bind:key="task.id">
+                <b-card-header header-tag="header" class="p-1" role="tab">
+                    <b-button squared block v-b-toggle="task.id" variant="outline-info">{{ task.description }}</b-button>
+                </b-card-header>
+                <b-collapse :id="task.id" accordion="my-accordion" role="tabpanel">
+                    <b-card-body>
+                        <b-card-text v-for="(value, key, index) in task" v-bind:key="index">
+                            {{key}} : {{value}} <br/>
+                        </b-card-text>
+                    </b-card-body>
+                </b-collapse>
+            </b-card>
+        </div>
+
+        <b-button :pressed.sync="flashLoan.toggled" squared variant="outline-secondary" @click="setFlashLoan" >{{ wrapMessage }}</b-button>
+        <b-button squared variant="warning" @click="doTasks" >execute</b-button>
+        <b-button squared variant="success" @click="reset" >reset</b-button>
+        
+        <b-modal id="wrapperModal" @ok="setFlashLoan" >
+            <form ref="setFlash" @submit="setFlashLoan">
+                <b-form-group
+                    label="Select your FlashLoan provider"
+                    label-for="flash-select">
+                    <b-form-select v-model="flashLoan.provider" :options="flashOptions" id="flash-select"></b-form-select>
+                </b-form-group>
+                <b-form-group
+                    label="Quantity"
+                    label-for="quantity-input">
+                    <b-form-input v-model='flashLoan.quantityInput' id="quantity-input"></b-form-input>
+                </b-form-group>
+            </form>
+        </b-modal>
+
+        <ActionsProvideAllowance />
+        <ActionsProvide721Allowance />
+        <ActionsWithdraw20 />
+        <ActionsRepayVault />
+        <ActionsWithdraw721  />
+        <ActionsRepayCamVault  />
+        <ActionsRepayMooSingleVault  />
+        <ActionsLeverVault  />
+        <ActionsLeverCamVault  />
+        <ActionsLeverMooSingleVault  />
+        <ActionsLiquidateVault  />
+        <ActionsLiquidateCamVault  />
+        <ActionsLiquidateMooSingleVault  />
+        <ActionsEnterCamContract  />
+        <ActionsLeaveCamContract  />
+
     </b-overlay>
 </template>
 
 <script>
     import vSelect from 'vue-select';
     import global from "~/mixins/global.js";
+    import setup from "~/mixins/setup.js";
     import { BigNumber } from "bignumber.js";
     import Worker_abi from "/static/Worker/abi.json";
     import IUniswapv2Pair_abi from "/static/IUniswapV2Pair/abi.json";
@@ -86,7 +91,7 @@
             duration: 30000,
             continuous: true
         },
-        mixins: [global],
+        mixins: [global, setup],
         computed : {
             activeTasks () {
                 return this.taskList.filter(i => i.queued == true);
@@ -105,7 +110,7 @@
                 } else if (nId == 250) {
                     return "ftmscan.com";
                 }
-            }
+            },
         },
         data() {
             return {
