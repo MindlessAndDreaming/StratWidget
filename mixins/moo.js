@@ -1,6 +1,8 @@
 import global from "~/mixins/global.js";
 import BigNumber from 'bignumber.js';
 
+import IERC20_abi from "/static/IERC20/abi.json";
+
 import IMooToken_abi from "/static/IMooToken/abi.json";
 import IMooStrategy_abi from "/static/IMooStrategy/abi.json";
     

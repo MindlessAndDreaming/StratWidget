@@ -41,6 +41,7 @@
     import BigNumber from 'bignumber.js';
     import global from "~/mixins/global.js";
     import swap from "~/mixins/swap.js";
+    import moo from "~/mixins/moo.js";
     import qi from "~/mixins/qi.js";
     import IERC20stablecoin_abi from "/static/IERC20Stablecoin/abi.json";
     import IERC721_abi from "/static/IERC721/abi.json";
@@ -48,7 +49,7 @@
     import IUniswapV2Router02_abi from "/static/IUniswapV2Router02/abi.json";
 
     export default {
-        mixins: [global, swap, qi],
+        mixins: [global, swap, qi, moo],
         computed: {
             tokenInfo() {
                 if(this.data.tokenData.name !== "") {

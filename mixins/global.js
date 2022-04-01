@@ -6,7 +6,7 @@ import { BigNumber } from "bignumber.js";
 export default {
     data(){
         return {
-            spookyswap_router:"",
+            spookyswap_router:"0xF491e7B69E4244ad4002BC14e878a34207E38c29",
             spiritswap_router:"0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52",
             quickswap_router:"0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
             sushi_router_multi: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",

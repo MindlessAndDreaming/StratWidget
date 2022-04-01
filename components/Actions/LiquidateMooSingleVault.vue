@@ -33,11 +33,11 @@
     import global from "~/mixins/global.js";
     import qi from "~/mixins/qi.js";
     import swap from "~/mixins/swap.js";
+    import moo from "~/mixins/moo.js";
     import IERC20stablecoin_abi from "/static/IERC20Stablecoin/abi.json";
-    import IERC20_abi from "/static/IERC20/abi.json";
 
     export default {
-        mixins: [global, swap, qi],
+        mixins: [global, swap, moo, qi],
         computed: {
             tokenInfo() {
                 if(this.data.tokenData.name !== "") {

@@ -31,23 +31,6 @@ contract Worker is Withdrawable, IUniswapV2Callee, Pausable {
         Action[] actions;
     }
 
-    function execute(Action[] memory actions )
-        public
-        onlyOwner
-        whenNotPaused
-        returns (Result[] memory)
-    {
-        Result[] memory results = new Result[](actions.length);
-
-        for (uint i = 0; i < actions.length; i++) {
-            (bool success, bytes memory returnData) = address(actions[i].To).call(actions[i].Data);
-            require(success);
-            Result memory result = Result(success, returnData); 
-            results[i] = result;
-        }
-        return results;
-    }
-
     function work(Action[] memory actions )
         internal
         whenNotPaused
@@ -62,6 +45,15 @@ contract Worker is Withdrawable, IUniswapV2Callee, Pausable {
             results[i] = result;
         }
         return results;
+    }
+
+    function execute(Action[] memory actions )
+        public
+        onlyOwner
+        whenNotPaused
+        returns (Result[] memory)
+    {
+        return work(actions);
     }
 
     function uniswapV2Call(
@@ -83,7 +75,7 @@ contract Worker is Withdrawable, IUniswapV2Callee, Pausable {
         require(msg.sender == IUniswapV2Factory(IUniswapV2Router02(details.sourceRouterAddress).factory()).getPair(token0, token1), "Unauthorized"); 
         require(_amount0 == 0 || _amount1 == 0, "There must be a zero asset");
         require(_amount0 != 0 || _amount1 != 0, "There must be a non zero asset");
-        require(sender == owner());
+        require(sender == owner(), "Unauthorized");
 
         work(details.actions);
 

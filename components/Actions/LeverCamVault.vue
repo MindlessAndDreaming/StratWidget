@@ -117,7 +117,7 @@
                 var swapRouterContract = new window.w3.eth.Contract(IUniswapV2Router02_abi, swapRouterAddress);
                 var amountsOut = await swapRouterContract.methods.getAmountsOut(loanValue, this.splitAndTrim(this.data.path)).call();
                 var baseCollateralExpected = amountsOut[amountsOut.length - 1];
-                var minBaseCollateralIn = new BigNumber(baseCollateralExpected).dividedToIntegerBy(1.01); // 0.5% slippage 
+                var minBaseCollateralIn = new BigNumber(baseCollateralExpected).dividedToIntegerBy(1.01); // 1% slippage 
 
                 var process = await this.processTokenToCamToken(collateralAddress, minBaseCollateralIn);
                 console.log(JSON.stringify(process)); 
