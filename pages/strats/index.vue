@@ -319,8 +319,8 @@
                 var quantityPayable = quantityBorrowing.multipliedBy(1000).dividedBy(996).integerValue().toString();
 
                 this.loadingMessage = "Encoding the Request";
-                var amount0 = token0Address == this.flashLoan.provider.mai ?  quantityBorrowing: 0;
-                var amount1 = token1Address == this.flashLoan.provider.mai ?  quantityBorrowing: 0;
+                var amount0 = window.w3.utils.toChecksumAddress(token0Address) == window.w3.utils.toChecksumAddress(this.flashLoan.provider.mai) ?  quantityBorrowing: 0;
+                var amount1 = window.w3.utils.toChecksumAddress(token1Address) == window.w3.utils.toChecksumAddress(this.flashLoan.provider.mai) ?  quantityBorrowing: 0;
 
                 var encodedStruct = window.w3.eth.abi.encodeParameter(
                     {
@@ -372,6 +372,8 @@
 
                 
                 this.loading = false;
+
+                console.log(amount0, amount1, this.worker_address);
 
                 return PairV2.methods.swap(
                     amount0,
